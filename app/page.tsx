@@ -29,7 +29,7 @@ const initialForm: FormState = {
   coverTitle: 'ASSIGNMENT ON',
 }
 
-const universityLogo = 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Logo_of_Bangladesh_Maritime_University-3nRxheVMn6IZAoZTGXg8n6Rv4WngIc.png'
+const universityLogo = '/api/logo'
 
 function UniversityLogo({ watermark = false }: { watermark?: boolean }) {
   return <img className={watermark ? 'university-logo watermark-logo' : 'university-logo'} src={universityLogo} alt={watermark ? '' : 'Bangladesh Maritime University logo'} aria-hidden={watermark} />
@@ -53,7 +53,30 @@ export default function Page() {
     if (!previewRef.current) return
     setIsExporting(true)
     try {
-      const canvas = await html2canvas(previewRef.current, { scale: 2, backgroundColor: '#ffffff', useCORS: true, windowWidth: previewRef.current.scrollWidth, windowHeight: previewRef.current.scrollHeight })
+      const canvas = await html2canvas(previewRef.current, {
+        scale: 2,
+        backgroundColor: '#ffffff',
+        useCORS: true,
+        imageTimeout: 15000,
+        windowWidth: 700,
+        windowHeight: 990,
+        onclone: (documentClone) => {
+          const workspace = documentClone.querySelector('.workspace') as HTMLElement | null
+          const previewPanel = documentClone.querySelector('.preview-panel') as HTMLElement | null
+          const paperWrap = documentClone.querySelector('.paper-wrap') as HTMLElement | null
+          const paper = documentClone.querySelector('.paper') as HTMLElement | null
+          for (const element of [workspace, previewPanel, paperWrap, paper]) {
+            if (element) element.style.display = 'block'
+          }
+          if (previewPanel) previewPanel.style.padding = '0'
+          if (paper) {
+            paper.style.width = '700px'
+            paper.style.minHeight = '990px'
+            paper.style.height = '990px'
+            paper.style.margin = '0'
+          }
+        },
+      })
       const pdf = new jsPDF('p', 'mm', 'a4')
       const image = canvas.toDataURL('image/png')
       const pageWidth = 210
@@ -61,6 +84,9 @@ export default function Page() {
       pdf.internal.pageSize.setHeight(pageHeight)
       pdf.addImage(image, 'PNG', 0, 0, pageWidth, pageHeight)
       pdf.save('bmu-assignment-cover.pdf')
+    } catch (error) {
+      console.error('[v0] PDF export failed:', error)
+      window.alert('The PDF could not be generated. Please try again.')
     } finally {
       setIsExporting(false)
     }
