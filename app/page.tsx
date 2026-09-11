@@ -47,7 +47,7 @@ export default function Page() {
     const date = new Date(`${value}T00:00:00`)
     const day = date.getDate()
     const suffix = day % 100 >= 11 && day % 100 <= 13 ? 'th' : ({ 1: 'st', 2: 'nd', 3: 'rd' }[day % 10] || 'th')
-    return `${day}${suffix} ${date.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })}`
+    return `${day}${suffix} ${date.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' }).toLowerCase()}`
   }
   const downloadPdf = async () => {
     if (!previewRef.current) return
@@ -80,9 +80,13 @@ export default function Page() {
       const pdf = new jsPDF('p', 'mm', 'a4')
       const image = canvas.toDataURL('image/png')
       const pageWidth = 210
-      const pageHeight = (canvas.height / canvas.width) * pageWidth
-      pdf.internal.pageSize.setHeight(pageHeight)
-      pdf.addImage(image, 'PNG', 0, 0, pageWidth, pageHeight)
+      const pageHeight = 297
+      const margin = 8
+      const contentWidth = pageWidth - margin * 2
+      const contentHeight = (canvas.height / canvas.width) * contentWidth
+      const x = (pageWidth - contentWidth) / 2
+      const y = (pageHeight - contentHeight) / 2
+      pdf.addImage(image, 'PNG', x, y, contentWidth, contentHeight)
       pdf.save('bmu-assignment-cover.pdf')
     } catch (error) {
       console.error('[v0] PDF export failed:', error)
@@ -125,7 +129,7 @@ export default function Page() {
 
         <section className="preview-panel"><div className="preview-meta"><span>Live preview</span><span>A4 · Portrait</span></div><div className="paper-wrap"><div className="paper" ref={previewRef}><div className="paper-watermark"><UniversityLogo watermark /></div><div className="paper-frame"><UniversityLogo /><h2>Bangladesh Maritime University</h2><p className="tagline">We strive for Maritime Excellence</p><p className="paper-department">{form.department || 'DEPARTMENT OF MARITIME LAW AND POLICY'}</p><h3>{form.coverTitle || 'ASSIGNMENT ON'}</h3><div className="paper-fields"><p><strong>TOPIC</strong><b>:</b><span>{form.topic || '\u00a0'}</span></p><p><strong>COURSE TITLE</strong><b>:</b><span>{form.courseTitle || '\u00a0'}</span></p><p><strong>COURSE CODE</strong><b>:</b><span>{form.courseCode || '\u00a0'}</span></p></div><div className="submission-grid"><div><h4>SUBMITTED TO -</h4><p className="submitted-block">{form.submittedTo || '\u00a0'}</p></div><div><h4>SUBMITTED BY -</h4><p><strong>NAME</strong><b>:</b><span>{form.submittedByName || '\u00a0'}</span></p><p><strong>ID</strong><b>:</b><span>{form.submittedById || '\u00a0'}</span></p></div></div><p className="date-line"><strong>DATE OF SUBMISSION :</strong> {formatDate(form.date)}</p></div></div></div></section>
       </div>
-      <footer className="site-footer"><p>Built by Shahriar Tanvir<br />Daffodil International University, SWE</p><p>262-35-351@diu.edu.bd</p><p>Rakib khan</p><p>LLB - VIII, Department of Maritime Law and Policy, Bangladesh Maritime University</p><p>lawkib29@gmail</p></footer>
+      <footer className="site-footer"><p>Built by Shahriar Tanvir</p><p>Daffodil International University, SWE — 262-35-351@diu.edu.bd</p><p>Rakib Khan — Class Representative</p><p>Department of Maritime Law and Policy, Bangladesh Maritime University</p></footer>
     </main>
   )
 }
