@@ -14,6 +14,7 @@ type FormState = {
   submittedByName: string
   submittedById: string
   date: string
+  coverTitle: string
 }
 
 const initialForm: FormState = {
@@ -25,6 +26,7 @@ const initialForm: FormState = {
   submittedByName: '',
   submittedById: '',
   date: '',
+  coverTitle: 'ASSIGNMENT ON',
 }
 
 const universityLogo = 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Logo_of_Bangladesh_Maritime_University-3nRxheVMn6IZAoZTGXg8n6Rv4WngIc.png'
@@ -40,6 +42,13 @@ export default function Page() {
   const [mobileView, setMobileView] = useState<'edit' | 'preview'>('edit')
 
   const update = (key: keyof FormState, value: string) => setForm((current) => ({ ...current, [key]: value }))
+  const formatDate = (value: string) => {
+    if (!value) return '\u00a0'
+    const date = new Date(`${value}T00:00:00`)
+    const day = date.getDate()
+    const suffix = day % 100 >= 11 && day % 100 <= 13 ? 'th' : ({ 1: 'st', 2: 'nd', 3: 'rd' }[day % 10] || 'th')
+    return `${day}${suffix} ${date.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })}`
+  }
   const downloadPdf = async () => {
     if (!previewRef.current) return
     setIsExporting(true)
@@ -77,6 +86,7 @@ export default function Page() {
 
           <div className="form-section">
             <label>Department<input value={form.department} onChange={(event) => update('department', event.target.value)} /></label>
+            <label>Cover title<input placeholder="e.g. Assignment On or Lab Report" value={form.coverTitle} onChange={(event) => update('coverTitle', event.target.value)} /></label>
             <label>Topic<input placeholder="Enter assignment topic" value={form.topic} onChange={(event) => update('topic', event.target.value)} /></label>
             <div className="form-grid"><label>Course title<input placeholder="e.g. Maritime Law" value={form.courseTitle} onChange={(event) => update('courseTitle', event.target.value)} /></label><label>Course code<input placeholder="e.g. MLP 301" value={form.courseCode} onChange={(event) => update('courseCode', event.target.value)} /></label></div>
           </div>
@@ -87,9 +97,9 @@ export default function Page() {
           <p className="form-footnote">All fields are private to this browser session.</p>
         </aside>
 
-        <section className="preview-panel"><div className="preview-meta"><span>Live preview</span><span>A4 · Portrait</span></div><div className="paper-wrap"><div className="paper" ref={previewRef}><div className="paper-watermark"><UniversityLogo watermark /></div><div className="paper-frame"><UniversityLogo /><h2>Bangladesh Maritime University</h2><p className="tagline">We strive for Maritime Excellence</p><p className="paper-department">{form.department || 'DEPARTMENT OF MARITIME LAW AND POLICY'}</p><h3>ASSIGNMENT ON</h3><div className="paper-fields"><p><strong>TOPIC</strong><b>:</b><span>{form.topic || '\u00a0'}</span></p><p><strong>COURSE TITLE</strong><b>:</b><span>{form.courseTitle || '\u00a0'}</span></p><p><strong>COURSE CODE</strong><b>:</b><span>{form.courseCode || '\u00a0'}</span></p></div><div className="submission-grid"><div><h4>SUBMITTED TO -</h4><p className="submitted-block">{form.submittedTo || '\u00a0'}</p></div><div><h4>SUBMITTED BY -</h4><p><strong>NAME</strong><b>:</b><span>{form.submittedByName || '\u00a0'}</span></p><p><strong>ID</strong><b>:</b><span>{form.submittedById || '\u00a0'}</span></p></div></div><p className="date-line"><strong>DATE OF SUBMISSION :</strong> {form.date ? new Date(`${form.date}T00:00:00`).toLocaleDateString('en-GB') : '\u00a0'}</p></div></div></div></section>
+        <section className="preview-panel"><div className="preview-meta"><span>Live preview</span><span>A4 · Portrait</span></div><div className="paper-wrap"><div className="paper" ref={previewRef}><div className="paper-watermark"><UniversityLogo watermark /></div><div className="paper-frame"><UniversityLogo /><h2>Bangladesh Maritime University</h2><p className="tagline">We strive for Maritime Excellence</p><p className="paper-department">{form.department || 'DEPARTMENT OF MARITIME LAW AND POLICY'}</p><h3>{form.coverTitle || 'ASSIGNMENT ON'}</h3><div className="paper-fields"><p><strong>TOPIC</strong><b>:</b><span>{form.topic || '\u00a0'}</span></p><p><strong>COURSE TITLE</strong><b>:</b><span>{form.courseTitle || '\u00a0'}</span></p><p><strong>COURSE CODE</strong><b>:</b><span>{form.courseCode || '\u00a0'}</span></p></div><div className="submission-grid"><div><h4>SUBMITTED TO -</h4><p className="submitted-block">{form.submittedTo || '\u00a0'}</p></div><div><h4>SUBMITTED BY -</h4><p><strong>NAME</strong><b>:</b><span>{form.submittedByName || '\u00a0'}</span></p><p><strong>ID</strong><b>:</b><span>{form.submittedById || '\u00a0'}</span></p></div></div><p className="date-line"><strong>DATE OF SUBMISSION :</strong> {formatDate(form.date)}</p></div></div></div></section>
       </div>
-      <footer className="site-footer"><p>Built by Shahriar Tanvir Daffodil International University, SWE</p><p>262-35-351@diu.edu.bd</p><p>Rakib khan</p><p>LLB - VIII, Department of Maritime Law and Policy, Bangladesh Maritime University</p><p>lawkib29@gmail</p></footer>
+      <footer className="site-footer"><p>Built by Shahriar Tanvir<br />Daffodil International University, SWE</p><p>262-35-351@diu.edu.bd</p><p>Rakib khan</p><p>LLB - VIII, Department of Maritime Law and Policy, Bangladesh Maritime University</p><p>lawkib29@gmail</p></footer>
     </main>
   )
 }
