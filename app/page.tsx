@@ -81,7 +81,7 @@ export default function Page() {
       const image = canvas.toDataURL('image/png')
       const pageWidth = 210
       const pageHeight = 297
-      const margin = 8
+      const margin = 20
       const contentWidth = pageWidth - margin * 2
       const contentHeight = (canvas.height / canvas.width) * contentWidth
       const x = (pageWidth - contentWidth) / 2
