@@ -65,15 +65,44 @@ export default function Page() {
           const previewPanel = documentClone.querySelector('.preview-panel') as HTMLElement | null
           const paperWrap = documentClone.querySelector('.paper-wrap') as HTMLElement | null
           const paper = documentClone.querySelector('.paper') as HTMLElement | null
+          const paperFrame = documentClone.querySelector('.paper-frame') as HTMLElement | null
           for (const element of [workspace, previewPanel, paperWrap, paper]) {
             if (element) element.style.display = 'block'
           }
-          if (previewPanel) previewPanel.style.padding = '0'
+          if (previewPanel) {
+            previewPanel.style.width = '700px'
+            previewPanel.style.padding = '0'
+            previewPanel.style.overflow = 'visible'
+          }
+          if (paperWrap) {
+            paperWrap.style.width = '700px'
+            paperWrap.style.height = '990px'
+          }
           if (paper) {
+            paper.style.boxSizing = 'border-box'
             paper.style.width = '700px'
+            paper.style.minWidth = '700px'
             paper.style.minHeight = '990px'
             paper.style.height = '990px'
+            paper.style.padding = '9.5%'
             paper.style.margin = '0'
+          }
+          if (paperFrame) {
+            paperFrame.style.boxSizing = 'border-box'
+            paperFrame.style.minHeight = '100%'
+          }
+          const exportTypography: Record<string, string> = {
+            '.paper h2': '37px',
+            '.paper .tagline': '14px',
+            '.paper .paper-department': '17px',
+            '.paper h3': '40px',
+            '.paper-fields': '18px',
+            '.submission-grid': '18px',
+            '.date-line': '18px',
+          }
+          for (const [selector, fontSize] of Object.entries(exportTypography)) {
+            const element = documentClone.querySelector(selector) as HTMLElement | null
+            if (element) element.style.fontSize = fontSize
           }
         },
       })
