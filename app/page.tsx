@@ -81,12 +81,10 @@ export default function Page() {
       const image = canvas.toDataURL('image/png')
       const pageWidth = 210
       const pageHeight = 297
-      const margin = 20
-      const contentWidth = pageWidth - margin * 2
-      const contentHeight = (canvas.height / canvas.width) * contentWidth
-      const x = (pageWidth - contentWidth) / 2
-      const y = (pageHeight - contentHeight) / 2
-      pdf.addImage(image, 'PNG', x, y, contentWidth, contentHeight)
+      // The captured preview already includes the paper's equal outer padding and border.
+      // Scale the complete A4-shaped capture to the full PDF page so those proportions
+      // remain identical instead of adding a second set of PDF margins.
+      pdf.addImage(image, 'PNG', 0, 0, pageWidth, pageHeight)
       pdf.save('bmu-assignment-cover.pdf')
     } catch (error) {
       console.error('[v0] PDF export failed:', error)
